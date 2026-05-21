@@ -3,7 +3,7 @@ import tarfile
 import urllib.request
 import xml.etree.ElementTree as ET
 import pandas as pd
-from sklearn.model_selection import train_test_split
+import numpy as np
 from tqdm import tqdm
 
 # Define paths
@@ -56,24 +56,35 @@ def parse_xml_reports(reports_dir, images_dir):
     """
     print("Parsing XML reports...")
     parsed_data = []
-    xml_files = [f for f in os.listdir(reports_dir) if f.endswith(".xml")]
+    xml_files = []
+    for root_dir, _, files in os.walk(reports_dir):
+        for f in files:
+            if f.endswith(".xml"):
+                xml_files.append(os.path.join(root_dir, f))
 
-    for file_name in tqdm(xml_files, desc="Parsing XMLs"):
-        file_path = os.path.join(reports_dir, file_name)
+    for file_path in tqdm(xml_files, desc="Parsing XMLs"):
+        file_name = os.path.basename(file_path)
         try:
             tree = ET.parse(file_path)
             root = tree.getroot()
 
             # Unique report ID
-            report_id = root.find(".//uids").attrib.get("id") if root.find(".//uids") is not None else file_name.replace(".xml", "")
+            uids_elem = root.find(".//uId")
+            if uids_elem is None:
+                uids_elem = root.find(".//uids")
+            report_id = uids_elem.attrib.get("id") if uids_elem is not None else file_name.replace(".xml", "")
 
             # Extract report text sections
             findings = ""
             impression = ""
             indication = ""
 
-            for abstract_text in root.findall(".//abstractText"):
-                label = abstract_text.attrib.get("label", "").upper()
+            abstract_texts = root.findall(".//AbstractText") + root.findall(".//abstractText")
+            for abstract_text in abstract_texts:
+                label = abstract_text.attrib.get("Label")
+                if label is None:
+                    label = abstract_text.attrib.get("label", "")
+                label = label.upper()
                 text = abstract_text.text if abstract_text.text else ""
                 
                 if label == "FINDINGS":
@@ -126,8 +137,18 @@ def generate_splits(df):
     # Split based on unique report IDs to prevent data leakage (patient overlapping in different views)
     unique_reports = df["report_id"].unique()
     
-    train_ids, test_ids = train_test_split(unique_reports, test_size=0.20, random_state=42)
-    val_ids, test_ids = train_test_split(test_ids, test_size=0.50, random_state=42)
+    # Deterministic split using numpy
+    np.random.seed(42)
+    shuffled_reports = unique_reports.copy()
+    np.random.shuffle(shuffled_reports)
+    
+    n_total = len(shuffled_reports)
+    n_train = int(n_total * 0.8)
+    n_val = int(n_total * 0.1)
+    
+    train_ids = shuffled_reports[:n_train]
+    val_ids = shuffled_reports[n_train:n_train+n_val]
+    test_ids = shuffled_reports[n_train+n_val:]
 
     df_train = df[df["report_id"].isin(train_ids)].copy()
     df_val = df[df["report_id"].isin(val_ids)].copy()

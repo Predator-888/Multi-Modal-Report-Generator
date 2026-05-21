@@ -72,7 +72,7 @@ data/raw/
 data/processed/
 data/splits/
 results/
-models/
+/models/
 runs/
 *.zip
 *.tar.gz

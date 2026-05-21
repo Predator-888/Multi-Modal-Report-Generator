@@ -1,4 +1,8 @@
 import os
+import sys
+# Dynamically add project root to python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
 import argparse
 import torch
 import torch.nn as nn

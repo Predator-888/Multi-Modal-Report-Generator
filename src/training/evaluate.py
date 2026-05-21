@@ -22,7 +22,7 @@ try:
 except LookupError:
     nltk.download('punkt', quiet=True)
 
-def get_args():
+def get_args(args=None):
     parser = argparse.ArgumentParser(description="Evaluate VLM Report Generation performance")
     
     # Paths
@@ -36,7 +36,7 @@ def get_args():
     parser.add_argument("--temperature", type=float, default=0.7, help="Sampling temperature")
     parser.add_argument("--batch-size", type=int, default=8, help="Evaluation batch size")
     
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 def calculate_metrics(hypotheses, references):
     """
@@ -105,8 +105,8 @@ def calculate_metrics(hypotheses, references):
         "ROUGE-L": round(avg_rouge_l, 4)
     }
 
-def main():
-    args = get_args()
+def main(args=None):
+    args = get_args(args)
     os.makedirs(args.output_dir, exist_ok=True)
     
     # 1. Load Checkpoint Metadata

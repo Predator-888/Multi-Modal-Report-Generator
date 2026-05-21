@@ -12,17 +12,17 @@ from transformers import AutoTokenizer
 from src.data.augmentations import get_transforms
 from src.models.multimodal import MultimodalMedicalReportGenerator
 
-def get_args():
+def get_args(args=None):
     parser = argparse.ArgumentParser(description="Run single-image report generation inference")
     parser.add_argument("--image", type=str, required=True, help="Path to chest X-ray image file (PNG/JPEG)")
     parser.add_argument("--checkpoint", type=str, required=True, help="Path to trained model checkpoint .pt file")
     parser.add_argument("--max-new-tokens", type=int, default=64, help="Max new tokens to generate")
     parser.add_argument("--temperature", type=float, default=0.7, help="Sampling temperature")
     parser.add_argument("--prompt", type=str, default="Findings:", help="Prompt prefix for report generation")
-    return parser.parse_args()
+    return parser.parse_args(args)
 
-def main():
-    args = get_args()
+def main(args=None):
+    args = get_args(args)
 
     # 1. Device Setup
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

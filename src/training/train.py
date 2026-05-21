@@ -14,7 +14,7 @@ from tqdm import tqdm
 from src.data.dataset import MultimodalMedicalDataset
 from src.models.multimodal import MultimodalMedicalReportGenerator
 
-def get_args():
+def get_args(args=None):
     parser = argparse.ArgumentParser(description="Train Multimodal Medical Report Generator")
     
     # Paths
@@ -45,10 +45,10 @@ def get_args():
     parser.add_argument("--warmup-steps", type=int, default=100, help="Learning rate warmup steps")
     parser.add_argument("--save-every", type=int, default=1, help="Save checkpoint every N epochs")
     
-    return parser.parse_args()
+    return parser.parse_args(args)
 
-def main():
-    args = get_args()
+def main(args=None):
+    args = get_args(args)
     os.makedirs(args.output_dir, exist_ok=True)
     os.makedirs(args.log_dir, exist_ok=True)
     

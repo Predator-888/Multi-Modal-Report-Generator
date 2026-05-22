@@ -96,7 +96,7 @@ class MultimodalMedicalReportGenerator(nn.Module):
         }
 
     @torch.no_grad()
-    def generate(self, images, tokenizer, max_new_tokens=64, temperature=0.7, top_k=50, top_p=0.9, prompt_text=""):
+    def generate(self, images, tokenizer, max_new_tokens=64, temperature=0.7, top_k=50, top_p=0.9, prompt_text="", repetition_penalty=1.2, no_repeat_ngram_size=3):
         """
         Autoregressive generation script for report generation from image inputs.
         
@@ -144,6 +144,8 @@ class MultimodalMedicalReportGenerator(nn.Module):
             "temperature": temperature if temperature > 0.0 else None,
             "top_k": top_k if temperature > 0.0 else None,
             "top_p": top_p if temperature > 0.0 else None,
+            "repetition_penalty": repetition_penalty,
+            "no_repeat_ngram_size": no_repeat_ngram_size,
             "pad_token_id": tokenizer.pad_token_id or tokenizer.eos_token_id,
             "eos_token_id": tokenizer.eos_token_id
         }

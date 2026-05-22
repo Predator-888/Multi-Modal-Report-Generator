@@ -139,7 +139,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate")) 
     
     with gr.Tab("🔬 Inference Pipeline"):
         with gr.Row():
-            with gr.Column(scale=1):
+            with gr.Column(scale=5):
                 gr.Markdown("### 1. Upload Chest X-Ray")
                 input_img = gr.Image(label="X-Ray Scan (DICOM/PNG/JPEG)", type="numpy")
                 
@@ -167,7 +167,7 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate")) 
                 
                 submit_btn = gr.Button("🚀 Generate Radiology Report", variant="primary")
                 
-            with gr.Column(scale=1.2):
+            with gr.Column(scale=6):
                 gr.Markdown("### 2. Clinical Report Output")
                 output_report = gr.Markdown(
                     value="*Upload a chest scan on the left and click Generate to see the VLM output.*"

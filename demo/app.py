@@ -202,4 +202,4 @@ with gr.Blocks(theme=gr.themes.Soft(primary_hue="blue", secondary_hue="slate")) 
 if __name__ == "__main__":
     is_colab = "google.colab" in sys.modules or os.path.exists("/content")
     print(f"Launching Gradio app (Colab detected: {is_colab})")
-    demo.launch(server_name="0.0.0.0", server_port=7860, share=is_colab)
+    demo.launch(server_name="0.0.0.0", server_port=7860, share=is_colab, show_api=False)

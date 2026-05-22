@@ -2,6 +2,26 @@ import os
 import sys
 # Dynamically add project root to python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+# Apply robust schema monkey-patch to handle boolean additionalProperties in gradio_client
+try:
+    import gradio_client.utils
+    if hasattr(gradio_client.utils, "_json_schema_to_python_type"):
+        orig_func = gradio_client.utils._json_schema_to_python_type
+        def patched_func(schema, defs=None):
+            if isinstance(schema, bool):
+                return "any" if schema else "None"
+            return orig_func(schema, defs)
+        gradio_client.utils._json_schema_to_python_type = patched_func
+    if hasattr(gradio_client.utils, "get_type"):
+        orig_get_type = gradio_client.utils.get_type
+        def patched_get_type(schema):
+            if isinstance(schema, bool):
+                return "any"
+            return orig_get_type(schema)
+        gradio_client.utils.get_type = patched_get_type
+    print("Applied gradio_client schema monkey-patch successfully.")
+except Exception as e:
+    print(f"Failed to apply gradio_client monkey-patch: {e}")
 
 import gradio as gr
 import torch

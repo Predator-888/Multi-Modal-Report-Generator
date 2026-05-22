@@ -80,7 +80,10 @@ class MultimodalMedicalReportGenerator(nn.Module):
             vis_labels = torch.full((B, num_patches), -100, dtype=labels.dtype, device=labels.device)
             combined_labels = torch.cat([vis_labels, labels], dim=1)
 
-        # 7. Pass to language decoder
+        # 7. Pass to language decoder (cast inputs_embeds to match decoder's parameter dtype)
+        target_dtype = next(self.language_decoder.parameters()).dtype
+        combined_embeds = combined_embeds.to(dtype=target_dtype)
+        
         outputs = self.language_decoder(
             inputs_embeds=combined_embeds,
             attention_mask=combined_attention_mask,
@@ -145,7 +148,10 @@ class MultimodalMedicalReportGenerator(nn.Module):
             "eos_token_id": tokenizer.eos_token_id
         }
 
-        # Generate token sequences
+        # Generate token sequences (cast inputs_embeds to match decoder model's parameter dtype)
+        target_dtype = next(decoder_model.parameters()).dtype
+        inputs_embeds = inputs_embeds.to(dtype=target_dtype)
+        
         generated_ids = decoder_model.generate(
             inputs_embeds=inputs_embeds,
             attention_mask=attention_mask,

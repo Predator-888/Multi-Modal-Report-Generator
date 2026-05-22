@@ -22,6 +22,11 @@ try:
 except LookupError:
     nltk.download('punkt', quiet=True)
 
+try:
+    nltk.data.find('tokenizers/punkt_tab')
+except LookupError:
+    nltk.download('punkt_tab', quiet=True)
+
 def get_args(args=None):
     parser = argparse.ArgumentParser(description="Evaluate VLM Report Generation performance")
     

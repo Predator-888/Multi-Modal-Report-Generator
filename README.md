@@ -7,7 +7,7 @@ sdk: gradio
 sdk_version: 4.40.0
 app_file: demo/app.py
 pinned: false
-python_version: 3.10
+python_version: "3.10"
 ---
 
 # Multimodal Medical Report Generator

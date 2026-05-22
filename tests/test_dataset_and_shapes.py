@@ -132,6 +132,23 @@ sys.modules['transformers'] = type('transformers', (), {
     'AutoTokenizer': type('AutoTokenizer', (), {'from_pretrained': lambda *args, **kwargs: MockTokenizer()})
 })
 
+# 6. Mock Pandas read_csv so that testing runs offline without CSV files
+import pandas as pd
+class MockIloc:
+    def __getitem__(self, idx):
+        return {
+            "image_name": "sample_image.png",
+            "text_report": "Findings: The lungs are clear. Impression: No acute cardiopulmonary abnormality."
+        }
+
+class MockDataFrame:
+    def __init__(self):
+        self.iloc = MockIloc()
+    def __len__(self):
+        return 10
+
+pd.read_csv = lambda *args, **kwargs: MockDataFrame()
+
 # --- NOW IMPORT REAL MODULES ---
 from src.data.dataset import MultimodalMedicalDataset
 
